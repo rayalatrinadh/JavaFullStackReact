@@ -1,0 +1,227 @@
+pom.xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>3.0.4</version>
+		<relativePath/> <!-- lookup parent from repository -->
+	</parent>
+	<groupId>com.trinadh</groupId>
+	<artifactId>learn-spring-framework</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>learn-spring-framework</name>
+	<description>Demo project for Spring Boot</description>
+	<properties>
+		<java.version>17</java.version>
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>
+
+---------------------------------------------------------------------
+App01GamingBasicJava.java
+package com.trinadh.learnspringframework;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.trinadh.learnspringframework.game.GameRunner;
+import com.trinadh.learnspringframework.game.MarioGame;
+import com.trinadh.learnspringframework.game.PacManGame;
+import com.trinadh.learnspringframework.game.SuperContraGame;
+import com.trinadh.learnspringframework.game.TrinadhGame;
+
+
+
+public class App01GamingBasicJava {
+	
+	
+
+	public static void main(String[] args) {
+		 //var game = new MarioGame();
+		 //var game = new SuperContraGame();
+		  //var game = new TrinadhGame();
+		var game = new PacManGame();
+		 var gameRunner = new GameRunner(game);
+		
+		gameRunner.run();
+		
+		
+		
+	}
+
+}
+
+---------------------------------------------------------------------
+GamingConsole.java
+package com.trinadh.learnspringframework.game;
+
+public interface GamingConsole {
+	
+	public void up();
+	public void down();
+	public void left();
+	public void right();
+
+}
+
+-------------------------------------------------------
+GameRunner.java
+package com.trinadh.learnspringframework.game;
+
+
+public class GameRunner {
+	
+	GamingConsole game;
+	
+	
+	public GameRunner(GamingConsole game) {
+		this.game = game;
+	}
+	
+	
+
+
+	public void run() {
+	   System.out.println("Running Game : " + game);
+	   game.up();
+	   game.down();
+	   game.left();
+	   game.right();
+		
+	}
+
+}
+
+----------------------------------------------------------------------------------------
+MarioGame.java
+package com.trinadh.learnspringframework.game;
+
+
+
+
+public class MarioGame implements GamingConsole{
+	
+	
+	public void up() {
+		System.out.println("Jump");
+	}
+	
+	public void down() {
+		System.out.println("go into the hole");
+	}
+	public void right() {
+		System.out.println("Accelerate");
+	}
+	public void left() {
+		System.out.println("move back");
+	}
+
+}
+-------------------------------------------------------------------------------
+PacManGame.java
+package com.trinadh.learnspringframework.game;
+
+public class PacManGame implements GamingConsole{
+	
+	public void up() {
+		System.out.println("up");
+	}
+
+	public void down() {
+		System.out.println("down");
+	}
+	
+	public void left() {
+		System.out.println("left");
+		
+	}
+	
+	public void right() {
+		System.out.println("right");
+	}
+
+}
+
+--------------------------------------------------------------------------------------------------------
+SuperContraGame.java
+package com.trinadh.learnspringframework.game;
+
+public class SuperContraGame implements GamingConsole{
+	
+	public void up() {
+		System.out.println("move forward");
+	}
+	public void down() {
+		System.out.println("sit down");
+	}
+	public void right() {
+		System.out.println("go right");
+	}
+	public void left() {
+		System.out.println("go left");
+	}
+
+}
+
+----------------------------------------------------------------------------
+TrinadhGame.java
+package com.trinadh.learnspringframework.game;
+
+public class TrinadhGame implements GamingConsole{
+	public void up() {
+		System.out.println("trinadh jump");
+	}
+	public void down() {
+		System.out.println("triadh please relax");
+	}
+	public void left() {
+		System.out.println("triandh go left");
+	}
+	public void right() {
+		System.out.println("trinadh go right");
+	}
+
+}
+
+------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
