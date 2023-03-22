@@ -1,0 +1,60 @@
+App03GamingSpringBeans
+package com.trinadh.learnspringframework;
+
+
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
+import com.trinadh.learnspringframework.game.GameRunner;
+import com.trinadh.learnspringframework.game.GamingConsole;
+
+public class App03GamingSpringBeans {
+	
+   public static void main(String args[]) {
+	   
+	   //1: Launching a spring context
+	try( var context =  new AnnotationConfigApplicationContext(GamingConfiguration.class)){
+		
+	   context.getBean(GamingConsole.class).up();
+	   
+	   context.getBean(GameRunner.class).run();
+		
+	}
+  }
+
+}
+------------------------------------------------------------------
+package com.trinadh.learnspringframework;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import com.trinadh.learnspringframework.game.GameRunner;
+import com.trinadh.learnspringframework.game.GamingConsole;
+import com.trinadh.learnspringframework.game.PacManGame;
+
+@Configuration
+public class GamingConfiguration {
+	
+	
+	@Bean
+	public GamingConsole game() {
+		var game = new PacManGame();
+		return game;
+	}
+	
+	@Bean
+	public GameRunner gameRunner(GamingConsole game) {
+		 var gameRunner = new GameRunner(game);
+		 return gameRunner;
+	}
+	
+	//var game = new MarioGame();
+	 //var game = new SuperContraGame();
+	  //var game = new TrinadhGame();
+//	  var game = new PacManGame();
+//	 var gameRunner = new GameRunner(game);
+//	
+//	gameRunner.run();
+
+}
+----------------------------------------------------------------------------------
