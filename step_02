@@ -1,0 +1,114 @@
+package com.trinadh.learnspringframework;
+
+
+import java.util.Arrays;
+
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
+public class App02HelloWorldSpring {
+	
+   public static void main(String args[]) {
+	   
+	   //1: Launching a spring context
+	 var context =  new AnnotationConfigApplicationContext(HelloWorldConfiguration.class);
+	  
+	  //2 : configure the things that we want spring to manage
+	  //HelloWorldConfiguration	 - @Configuration
+	  //name - @Bean
+	  	
+	  
+	  //3. Retreiving Beans managed by spring 
+	 System.out.println(context.getBean("name"));
+	 System.out.println(context.getBean("person"));
+	 System.out.println(context.getBean("address2"));
+	 System.out.println(context.getBean("person2Method")); //person3Parameters
+	 System.out.println(context.getBean("person3Parameters"));
+	 System.out.println(context.getBean(Address.class));
+	 System.out.println(context.getBean(Person.class));
+	 System.out.println("----------------------\n");
+	 System.out.println(context.getBean("person4Parameters"));
+	 
+	 System.out.println("to prin beanDefinitions====================>");
+	 Arrays.stream(context.getBeanDefinitionNames()).forEach(System.out:: println);
+	  
+   }
+
+}
+
+-----------------------------------------------------------------------
+package com.trinadh.learnspringframework;
+
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
+
+//Eliminate verbosity in creating Java Beans
+//Public accessor methods, constructor, 
+//equals, hashcode and toString are automatically created. 
+//Released in JDK 16.
+
+record Person(String name,int age,Address address) {}
+
+record Address(String firstLine, String city){}
+
+@Configuration
+public class HelloWorldConfiguration {
+	
+	 @Bean
+	 public String name() {
+		 return "trinadh Rayala";
+	 }
+	 
+	 @Bean
+	 public int age() {
+		 return 25;
+	 }
+	 
+	 
+	 @Bean
+	 @Primary
+	 public Person person() {
+		 return new Person("trinadh" , 24,new Address("LutherMartinKing","Chicago"));
+	 }
+	 
+	 
+	 @Bean(name = "address2")  //bean renaming from address to address2
+	 @Primary                 //for person4Parameters (Address address) -> it takes primary Bean
+	 public Address address() {
+		 return new Address("south King Drive","Chicago");
+	 }
+	 
+	 @Bean (name = "address3")  
+	 @Qualifier("address3qualifier") //qualifier to mention specifically this particular bean check in person5Qualifier(mentioned @Qualifier)
+	 public Address address3() {
+		 return new Address("kudapa","andhrapradesh");
+	 }
+	 
+	 @Bean
+	 public Person person2Method() { //bean used another existing bean by calling method names... name(),age(),address();
+		 return new Person(name(),age(),address());
+	 }
+
+	 @Bean
+	 public Person person3Parameters(String name,int age, Address address3) {
+		 //bean passed through parameters
+		 return new Person(name,age,address3);
+	 }
+	 
+	 @Bean
+	 public Person person4Parameters(String name,int age, Address address ) {
+		 //bean passed through parameters
+		 return new Person(name,age,address);
+	 }
+	 
+	 
+	 @Bean
+	 public Person person5Qualifier(String name,int age, @Qualifier("address3qualifier") Address address) {
+		 //bean passed through parameters
+		 return new Person(name,age,address);
+	 }
+	 
+	 
+}
+--------------------------------------------------------------
