@@ -1,0 +1,188 @@
+GamingAppLauncherApplication.java
+
+package com.trinadh.learnspringframework;
+
+
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+
+import com.trinadh.learnspringframework.game.GameRunner;
+import com.trinadh.learnspringframework.game.GamingConsole;
+
+
+@Configuration
+@ComponentScan("com.trinadh.learnspringframework.game")
+public class GamingAppLauncherApplication {
+//	@Bean
+//	public GamingConsole game() {
+//		var game = new PacmanGame();
+//		return game;
+//	}
+//
+//	@Bean
+//	public GameRunner gameRunner(GamingConsole game) {
+//		var gameRunner = new GameRunner(game);
+//		return gameRunner;
+//	}
+	
+   public static void main(String args[]) {
+	   
+	   //1: Launching a spring context
+	try( var context =  new AnnotationConfigApplicationContext(GamingAppLauncherApplication.class)){
+		
+	   context.getBean(GamingConsole.class).up();
+	   
+	   context.getBean(GameRunner.class).run();
+		
+	}
+  }
+
+}
+
+-------------------------------------------------------------------------------------------------------------
+package com.trinadh.learnspringframework.game;
+
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
+
+@Component
+public class GameRunner {
+	
+	private GamingConsole game;
+	
+	
+	public GameRunner(@Qualifier("SuperContraGameQualifier") GamingConsole game) {
+		this.game = game;
+	}
+	
+	
+
+
+	public void run() {
+	   System.out.println("Running Game : " + game);
+	   game.up();
+	   game.down();
+	   game.left();
+	   game.right();
+		
+	}
+
+}
+
+---------------
+package com.trinadh.learnspringframework.game;
+
+
+
+public interface GamingConsole {
+	
+	public void up();
+	public void down();
+	public void left();
+	public void right();
+
+}
+
+----------------
+package com.trinadh.learnspringframework.game;
+
+import org.springframework.context.annotation.Primary;
+import org.springframework.stereotype.Component;
+
+@Component
+@Primary
+public class MarioGame implements GamingConsole{
+	
+	
+	public void up() {
+		System.out.println("Jump");
+	}
+	
+	public void down() {
+		System.out.println("go into the hole");
+	}
+	public void right() {
+		System.out.println("Accelerate");
+	}
+	public void left() {
+		System.out.println("move back");
+	}
+
+}
+
+-------------------------
+package com.trinadh.learnspringframework.game;
+
+import org.springframework.stereotype.Component;
+
+@Component
+public class PacManGame implements GamingConsole{
+	
+	public void up() {
+		System.out.println("up");
+	}
+
+	public void down() {
+		System.out.println("down");
+	}
+	
+	public void left() {
+		System.out.println("left");
+		
+	}
+	
+	public void right() {
+		System.out.println("right");
+	}
+
+}
+
+-------------------------
+package com.trinadh.learnspringframework.game;
+
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
+
+@Component
+@Qualifier("SuperContraGameQualifier")
+public class SuperContraGame implements GamingConsole{
+	
+	public void up() {
+		System.out.println("move forward");
+	}
+	public void down() {
+		System.out.println("sit down");
+	}
+	public void right() {
+		System.out.println("go right");
+	}
+	public void left() {
+		System.out.println("go left");
+	}
+
+}
+
+-------------------------------------
+package com.trinadh.learnspringframework.game;
+
+import org.springframework.stereotype.Component;
+
+@Component
+public class TrinadhGame implements GamingConsole{
+	public void up() {
+		System.out.println("trinadh jump");
+	}
+	public void down() {
+		System.out.println("triadh please relax");
+	}
+	public void left() {
+		System.out.println("triandh go left");
+	}
+	public void right() {
+		System.out.println("trinadh go right");
+	}
+
+}
+============================
+
