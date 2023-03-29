@@ -1,0 +1,244 @@
+package com.trinadh.springboot.learnjpaandhibernate.course;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.stereotype.Component;
+
+import com.trinadh.springboot.learnjpaandhibernate.course.Course;
+import com.trinadh.springboot.learnjpaandhibernate.course.Student;
+import com.trinadh.springboot.learnjpaandhibernate.course.jdbc.CourseJdbcRepository;
+import com.trinadh.springboot.learnjpaandhibernate.course.jpa.CourseJpaRepository;
+
+
+
+@Component
+public class CourseCommandLineRunner implements CommandLineRunner{
+
+//	@Autowired
+//	private CourseJdbcRepository repository;
+	
+	@Autowired
+	private CourseJpaRepository repository;
+	
+	
+	
+	@Override
+	public void run(String... args) throws Exception {
+		System.out.println("commandLine RUnner ----------------------->>> ");
+		repository.insert(new Course((long)1,"learn Microservices", "from trinadh"));
+		repository.insert(new Course((long)2,"learn Azure Jpa", "from trinadh"));
+		repository.insert(new Course((long)3,"learn Devops Jpa", "from trinadh"));
+		repository.insert(new Course((long)4,"learn kubernets Jpa", "from trinadh"));
+		repository.insert(new Course((long)5,"learn GoogleCloud Jpa", "from trinadh"));
+		
+		
+		repository.deleteById((long)1);
+		
+        System.out.println(repository.findById((long)2));
+        System.out.println(repository.findById((long)3));	
+	}
+}
+=========================================================================================================================
+
+                                                            JDBC
+package com.trinadh.springboot.learnjpaandhibernate.course.jdbc;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
+
+import com.trinadh.springboot.learnjpaandhibernate.course.Course;
+import com.trinadh.springboot.learnjpaandhibernate.course.Student;
+
+@Repository
+public class CourseJdbcRepository {
+	
+	@Autowired
+	private JdbcTemplate springJdbcTemplate;
+	
+	
+	private static String INSERT_QUERY1 = 
+			
+			"""
+					insert into course(id,name,author)
+					values(?,?,?)
+					
+			""";
+	
+	private static String DELETE_QUERY1 = 
+			
+			"""
+					delete from course where id = ?
+					
+					""";
+	
+private static String SELECT_QUERY1 = 
+			
+			"""
+					SELECT *  from course where id = ?
+					
+					""";
+
+
+private static String STUDENT_INSERT_QUERY = 
+
+			"""
+					insert into Student(id,name,course)
+					values(?,?,?)
+					
+			""";
+				
+	public void insert(Course course) {
+		System.out.println("need to update query");
+		springJdbcTemplate.update(INSERT_QUERY1,
+				course.getId(),course.getName(),course.getAuthor());
+	}
+	
+	public void deleteById(Long id) {
+		springJdbcTemplate.update(DELETE_QUERY1,id);
+	}
+	
+	public Course findById(Long id) {
+		//ResultSet -> Bean => RowMapper
+		
+		return springJdbcTemplate.queryForObject(SELECT_QUERY1,new BeanPropertyRowMapper<>(Course.class) ,id);
+	}
+	
+	public void studentInsert(Student student) {
+		springJdbcTemplate.update(STUDENT_INSERT_QUERY, 
+				student.getId(),student.getName(),student.getCourse());
+	}
+	
+
+}
+-----------------------------------------------------------------------------------------------------------
+
+                                            JPA
+package com.trinadh.springboot.learnjpaandhibernate.course.jpa;
+
+import org.springframework.stereotype.Repository;
+
+import com.trinadh.springboot.learnjpaandhibernate.course.Course;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
+
+@Repository
+@Transactional
+public class CourseJpaRepository {
+	
+	@PersistenceContext
+	private EntityManager entityManager;
+	
+	public void insert(Course course) {
+		entityManager.merge(course);
+		
+	}
+	
+	public Course findById(long id) {
+		return entityManager.find(Course.class,id);
+	}
+	
+	public void deleteById(long id) {
+		Course course = entityManager.find(Course.class,id);
+		entityManager.remove(course);
+	}
+	
+
+}
+--------------------------------------------------------------------------------------
+ ##################################################### course class for JPA #################################################
+package com.trinadh.springboot.learnjpaandhibernate.course;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+
+@Entity
+public class Course {
+	
+	@Id
+	private Long id;
+	private String name;
+	private String author;
+	
+	
+	public Course() {
+		
+	}
+	public Course(Long id, String name, String author) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.author = author;
+	}
+	public Long getId() {
+		return id;
+	}
+	public String getName() {
+		return name;
+	}
+	public String getAuthor() {
+		return author;
+	}
+  
+	public void setId(Long id) {
+		this.id = id;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public void setAuthor(String author) {
+		this.author = author;
+	}
+	@Override
+	public String toString() {
+		return String.format("Course [id=%s, name=%s, author=%s]", id, name, author);
+	}
+}
+---------------------------------------------------------------------------------------------------
+##################################################### course class for JDBC #################################################
+package com.trinadh.springboot.learnjpaandhibernate.course;
+
+public class Course {
+	
+	private Long id;
+	private String name;
+	private String author;
+	
+	
+	public Course() {
+		
+	}
+	public Course(Long id, String name, String author) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.author = author;
+	}
+	public Long getId() {
+		return id;
+	}
+	public String getName() {
+		return name;
+	}
+	public String getAuthor() {
+		return author;
+	}
+	public void setId(Long id) {
+		this.id = id;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public void setAuthor(String author) {
+		this.author = author;
+	}
+	@Override
+	public String toString() {
+		return String.format("Course [id=%s, name=%s, author=%s]", id, name, author);
+	}
+}
+--------------------------------------------------------------------------------------------------------------------------------------------------------
+
