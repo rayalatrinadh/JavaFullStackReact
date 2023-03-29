@@ -1,0 +1,190 @@
+package com.trinadh.springboot.learnjpaandhibernate;
+
+import java.util.Arrays;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
+
+@SpringBootApplication
+public class LearnJpaAndHibernateApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(LearnJpaAndHibernateApplication.class, args);
+		
+//		try( var context = new AnnotationConfigApplicationContext(LearnJpaAndHibernateApplication.class)){
+//			 
+//			System.out.println("bean Definitions ");
+//			 Arrays.stream(context.getBeanDefinitionNames()).forEach(System.out::println);
+//			 
+//			}
+		
+	}
+
+}
+
+-----
+package com.trinadh.springboot.learnjpaandhibernate.course;
+
+public class Course {
+	private Long id;
+	private String name;
+	private String author;
+	
+	
+	public Course() {
+		
+	}
+	public Course(Long id, String name, String author) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.author = author;
+	}
+	public Long getId() {
+		return id;
+	}
+	public String getName() {
+		return name;
+	}
+	public String getAuthor() {
+		return author;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	public void setId(Long id) {
+		this.id = id;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public void setAuthor(String author) {
+		this.author = author;
+	}
+	@Override
+	public String toString() {
+		return String.format("Course [id=%s, name=%s, author=%s]", id, name, author);
+	}
+	
+}
+--------------------
+
+package com.trinadh.springboot.learnjpaandhibernate.course.jdbc;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.stereotype.Component;
+
+import com.trinadh.springboot.learnjpaandhibernate.course.Course;
+
+
+
+@Component
+public class CourseJdbcCommandLineRunner implements CommandLineRunner{
+
+	@Autowired
+	private CourseJdbcRepository repository;
+	
+	
+	
+	@Override
+	public void run(String... args) throws Exception {
+		System.out.println("commandLine RUnner ----------------------->>> ");
+		repository.insert(new Course((long)1,"learn Microservices", "from trinadh"));
+		repository.insert(new Course((long)2,"learn Azure", "from trinadh"));
+		repository.insert(new Course((long)3,"learn Devops", "from trinadh"));
+		repository.insert(new Course((long)4,"learn kubernets", "from trinadh"));
+		repository.insert(new Course((long)5,"learn GoogleCloud", "from trinadh"));
+		
+		
+		repository.deleteById((long)1);
+		
+        System.out.println(repository.findByID((long)2));
+        System.out.println(repository.findByID((long)3));	
+	}
+}
+----------------------------------------------------------
+package com.trinadh.springboot.learnjpaandhibernate.course.jdbc;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
+
+import com.trinadh.springboot.learnjpaandhibernate.course.Course;
+
+@Repository
+public class CourseJdbcRepository {
+	
+	@Autowired
+	private JdbcTemplate springJdbcTemplate;
+	
+	
+	private static String INSERT_QUERY1 = 
+			
+			"""
+					insert into course(id,name,author)
+					values(?,?,?)
+					
+			""";
+	
+	private static String DELETE_QUERY1 = 
+			
+			"""
+					delete from course where id = ?
+					
+					""";
+	
+private static String SELECT_QUERY1 = 
+			
+			"""
+					SELECT *  from course where id = ?
+					
+					""";
+	
+	public void insert(Course course) {
+		System.out.println("need to update query");
+		springJdbcTemplate.update(INSERT_QUERY1,
+				course.getId(),course.getName(),course.getAuthor());
+	}
+	
+	public void deleteById(Long id) {
+		springJdbcTemplate.update(DELETE_QUERY1,id);
+	}
+	
+	public Course findByID(Long id) {
+		//ResultSet -> Bean => RowMapper
+		
+		return springJdbcTemplate.queryForObject(SELECT_QUERY1,new BeanPropertyRowMapper<>(Course.class) ,id);
+	}
+}
+-----------------------------------------------------------------------------------------------------------------------
+/learn-jpa-and-hibernate/src/main/resources/application.properties
+
+#spring.h2.console.enabled=true
+#spring.h2.console.path=/h2console/
+
+spring.datasource.url=jdbc:h2:mem:testdb
+spring.datasource.driverClassName=org.h2.Driver
+spring.datasource.username=sa
+spring.datasource.password=
+spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
+
+#enabling the H2 console
+spring.h2.console.enabled=true
+----------------------------------------------------------------------------------
+/learn-jpa-and-hibernate/src/main/resources/schema.sql
+
+create table course(
+  id bigint not null,
+  name varchar(20) not null,
+  author varchar(20) not null,
+  primary key(id)
+);
